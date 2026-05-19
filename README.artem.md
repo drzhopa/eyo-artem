@@ -45,11 +45,23 @@ Use this only on an unpacked EPUB folder, not directly on `.epub`.
 
 ```bash
 npm run yo:epub:prepare -- /path/to/unpacked-epub
-npm run yo:epub:next -- /path/to/unpacked-epub
-npm run yo:epub:apply -- /path/to/unpacked-epub ID "исправленное предложение"
-npm run yo:epub:skip -- /path/to/unpacked-epub ID
+npm run yo:epub:export-batch -- /path/to/unpacked-epub batch.json --limit 50
+npm run yo:epub:print-batch -- batch.json
+npm run yo:epub:apply-batch -- /path/to/unpacked-epub decisions.json
 npm run yo:epub:status -- /path/to/unpacked-epub
 ```
+
+Use batch mode by default to minimize chat/token usage. The model should see only the compact batch content and return a compact `decisions.json` array:
+
+```json
+[
+  {"id": 166, "sentence": "Всё равно до обеда..."},
+  {"id": 167, "sentence": "unchanged original sentence..."},
+  {"id": 168, "skip": true}
+]
+```
+
+`sentence` may be identical to the original when no `ё` change is needed. The script rejects any change except `е/ё` and `Е/Ё`.
 
 The EPUB wrapper changes only visible text between XHTML tags. It does not edit tags, attributes, links, or EPUB structure.
 
