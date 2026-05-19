@@ -73,3 +73,14 @@ Examples:
 - Good safe candidate: a word that only exists naturally with `ё`.
 - Bad safe candidate: `стекла → стёкла`, because `стекла` can also be a past-tense verb.
 
+
+## Known ambiguity examples
+
+`ведра` must stay in manual review:
+
+```text
+три ведра   # no ё: numeral + genitive singular
+эти вёдра   # ё: nominative plural
+```
+
+So `ведра → вёдра` is context-dependent and must not be moved to `safe.txt`.
