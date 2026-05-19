@@ -75,6 +75,7 @@
     "yo:epub:status": "node tools/yo_epub_review.mjs status",
     "yo:epub:export-batch": "node tools/yo_epub_review.mjs export-batch",
     "yo:epub:print-batch": "node tools/yo_epub_review.mjs print-batch",
-    "yo:epub:apply-batch": "node tools/yo_epub_review.mjs apply-batch"
+    "yo:epub:apply-batch": "node tools/yo_epub_review.mjs apply-batch",
+    "yo:epub:next-min": "node tools/yo_epub_review.mjs next-min"
   }
 }

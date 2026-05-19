@@ -302,6 +302,16 @@ function nextItem() {
   console.log(`node tools/yo_epub_review.mjs apply ${JSON.stringify(root)} ${item.id} "ИСПРАВЛЕННОЕ ПРЕДЛОЖЕНИЕ"`);
 }
 
+function nextMin() {
+  const { state } = loadState();
+  const item = state.items.find((x) => x.status === 'pending');
+  if (!item) {
+    console.log('{}');
+    return;
+  }
+  console.log(JSON.stringify(compactItem(item), null, 2));
+}
+
 function apply() {
   const rootArg = args[0];
   const id = Number(args[1]);
@@ -385,6 +395,7 @@ function help() {
 if (command === 'prepare') prepare();
 else if (command === 'status') status();
 else if (command === 'next') nextItem();
+else if (command === 'next-min') nextMin();
 else if (command === 'apply') apply();
 else if (command === 'export-batch') exportBatch();
 else if (command === 'print-batch') printBatch();

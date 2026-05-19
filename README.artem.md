@@ -47,6 +47,8 @@ Use this only on an unpacked EPUB folder, not directly on `.epub`.
 npm run yo:epub:prepare -- /path/to/unpacked-epub
 npm run yo:epub:export-batch -- /path/to/unpacked-epub batch.json --limit 50
 npm run yo:epub:print-batch -- batch.json
+# or for strict one-sentence exposure:
+npm run yo:epub:next-min -- /path/to/unpacked-epub
 npm run yo:epub:apply-batch -- /path/to/unpacked-epub decisions.json
 npm run yo:epub:status -- /path/to/unpacked-epub
 ```
