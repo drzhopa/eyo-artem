@@ -288,25 +288,116 @@ function status() {
 
 function nextItem() {
   const { state } = loadState();
-  const item = state.items.find((x) => x.status === 'pending');
-  if (!item) {
-    console.log('{}');
-    return;
+  const limit = parseLimit();
+  const items = state.items
+    .filter((x) => x.status === 'pending')
+    .slice(0, limit)
+    .map(compactItem);
+
+  console.log(JSON.stringify({
+    limit,
+    count: items.length,
+    items
+  }, null, 2));
+}
+
+function parseLimit(defaultLimit = 15, maxLimit = 50) {
+  const limitArgIndex = args.findIndex((x) => x === '--limit');
+  const inlineLimitArg = args.find((x) => x.startsWith('--limit='));
+  const rawLimit = inlineLimitArg
+    ? inlineLimitArg.slice('--limit='.length)
+    : limitArgIndex >= 0
+      ? args[limitArgIndex + 1]
+      : args[1];
+
+  if (rawLimit === undefined) return defaultLimit;
+
+  const limit = Number(rawLimit);
+  if (!Number.isInteger(limit) || limit < 1) {
+    die(`Некорректный limit: ${rawLimit}`);
   }
-  console.log(JSON.stringify(compactItem(item), null, 2));
+  return Math.min(limit, maxLimit);
+}
+
+function readDecisionJson() {
+  const decisionPath = args[1];
+  const raw = decisionPath
+    ? fs.readFileSync(path.resolve(decisionPath), 'utf8')
+    : fs.readFileSync(0, 'utf8');
+
+  if (!raw.trim()) die('Нет JSON с исправленными предложениями');
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    die(`Некорректный JSON: ${error.message}`);
+  }
+}
+
+function normalizeDecisions(input) {
+  if (Array.isArray(input.apply) || Array.isArray(input.skip)) {
+    const decisions = [];
+
+    for (const item of input.apply ?? []) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        die(`Некорректное решение в apply: ${JSON.stringify(item)}`);
+      }
+      decisions.push(item);
+    }
+
+    for (const id of input.skip ?? []) {
+      decisions.push({ id, skip: true });
+    }
+
+    return decisions;
+  }
+
+  if (Array.isArray(input)) return input;
+  if (Array.isArray(input.items)) return input.items;
+  if (Number.isInteger(Number(input.id))) return [input];
+  die('JSON должен быть объектом с apply[]/skip[], items[], массивом решений или одним решением');
+}
+
+function markSkipped(item) {
+  item.status = 'skipped';
+  item.skippedAt = new Date().toISOString();
 }
 
 function apply() {
   const rootArg = args[0];
-  const id = Number(args[1]);
-  const corrected = args[2];
-  if (!rootArg || !Number.isInteger(id) || typeof corrected !== 'string') {
-    die('Использование: node tools/yo_epub_review.mjs apply /path/to/unpacked-epub ID "исправленное предложение"');
+  if (!rootArg) {
+    die('Использование: node tools/yo_epub_review.mjs apply /path/to/unpacked-epub [decisions.json]');
   }
+
+  const input = readDecisionJson();
+  const decisions = normalizeDecisions(input);
   const { root, state } = loadState(rootArg);
-  applyDecision(root, state, { id, sentence: corrected });
+  const results = { applied: 0, skipped: 0 };
+  const seenIds = new Set();
+
+  for (const decision of decisions) {
+    const id = Number(decision.id);
+    if (!Number.isInteger(id)) die(`Некорректный id в решении: ${JSON.stringify(decision)}`);
+    if (seenIds.has(id)) die(`ID ${id} указан больше одного раза`);
+    seenIds.add(id);
+
+    const item = state.items.find((x) => x.id === id);
+    if (!item) die(`Нет предложения с ID ${id}`);
+    if (item.status !== 'pending') die(`Предложение ${id} уже имеет статус: ${item.status}`);
+
+    const corrected = decision.sentence ?? decision.corrected;
+    if (decision.skip === true || corrected === item.sentence) {
+      markSkipped(item);
+      results.skipped += 1;
+      continue;
+    }
+    if (typeof corrected !== 'string') die(`В решении ${id} нет поля sentence/corrected`);
+
+    applyDecision(root, state, { id, sentence: corrected });
+    results.applied += 1;
+  }
+
   writeJson(statePath(root), state);
-  console.log(`Применено: ${id}`);
+  console.log(JSON.stringify(results, null, 2));
 }
 
 function skip() {
@@ -323,7 +414,7 @@ function skip() {
 }
 
 function help() {
-  console.log(`Команды:\n  prepare /path/to/unpacked-epub\n  status /path/to/unpacked-epub\n  next /path/to/unpacked-epub\n  apply /path/to/unpacked-epub ID "исправленное предложение"\n  skip /path/to/unpacked-epub ID`);
+  console.log(`Команды:\n  prepare /path/to/unpacked-epub\n  status /path/to/unpacked-epub\n  next /path/to/unpacked-epub [--limit N]\n  apply /path/to/unpacked-epub [decisions.json]\n  skip /path/to/unpacked-epub ID`);
 }
 
 if (command === 'prepare') prepare();
