@@ -287,22 +287,6 @@ function status() {
 }
 
 function nextItem() {
-  const { root, state } = loadState();
-  const item = state.items.find((x) => x.status === 'pending');
-  if (!item) {
-    console.log('Очередь пуста. Все предложения обработаны.');
-    return;
-  }
-  console.log(`ID: ${item.id}`);
-  console.log(`Файл: ${item.file}`);
-  console.log(`Спорные варианты: ${item.suggestions.map((s) => `${s.before}→${s.after}`).join(', ')}`);
-  console.log('--- sentence ---');
-  console.log(item.sentence);
-  console.log('--- apply command ---');
-  console.log(`node tools/yo_epub_review.mjs apply ${JSON.stringify(root)} ${item.id} "ИСПРАВЛЕННОЕ ПРЕДЛОЖЕНИЕ"`);
-}
-
-function nextMin() {
   const { state } = loadState();
   const item = state.items.find((x) => x.status === 'pending');
   if (!item) {
@@ -325,56 +309,6 @@ function apply() {
   console.log(`Применено: ${id}`);
 }
 
-function exportBatch() {
-  const rootArg = args[0];
-  const outFile = args[1];
-  const limitFlagIndex = args.indexOf('--limit');
-  const limit = limitFlagIndex === -1 ? 50 : Number(args[limitFlagIndex + 1]);
-  if (!rootArg || !outFile || !Number.isInteger(limit) || limit < 1) {
-    die('Использование: node tools/yo_epub_review.mjs export-batch /path/to/unpacked-epub batch.json --limit 50');
-  }
-  const { state } = loadState(rootArg);
-  const batch = state.items.filter((x) => x.status === 'pending').slice(0, limit).map(compactItem);
-  writeJson(outFile, batch);
-  console.log(`exported=${batch.length}`);
-  console.log(`file=${outFile}`);
-}
-
-function printBatch() {
-  const batchFile = args[0];
-  if (!batchFile) die('Использование: node tools/yo_epub_review.mjs print-batch batch.json');
-  const batch = readJson(batchFile);
-  for (const item of batch) {
-    console.log(`${item.id} | ${item.suggestions.join(', ')}`);
-    console.log(item.sentence);
-    console.log('---');
-  }
-}
-
-function applyBatch() {
-  const rootArg = args[0];
-  const decisionsFile = args[1];
-  if (!rootArg || !decisionsFile) {
-    die('Использование: node tools/yo_epub_review.mjs apply-batch /path/to/unpacked-epub decisions.json');
-  }
-  const { root, state } = loadState(rootArg);
-  const decisions = readJson(decisionsFile);
-  if (!Array.isArray(decisions)) die('Файл решений должен быть JSON-массивом.');
-
-  let done = 0;
-  let skipped = 0;
-  for (const decision of decisions) {
-    const result = applyDecision(root, state, decision);
-    if (result === 'done') done += 1;
-    if (result === 'skipped') skipped += 1;
-  }
-  writeJson(statePath(root), state);
-  const counts = stateCounts(state);
-  console.log(`applied=${done}`);
-  console.log(`skipped=${skipped}`);
-  console.log(`remaining=${counts.pending}`);
-}
-
 function skip() {
   const rootArg = args[0];
   const id = Number(args[1]);
@@ -395,10 +329,6 @@ function help() {
 if (command === 'prepare') prepare();
 else if (command === 'status') status();
 else if (command === 'next') nextItem();
-else if (command === 'next-min') nextMin();
 else if (command === 'apply') apply();
-else if (command === 'export-batch') exportBatch();
-else if (command === 'print-batch') printBatch();
-else if (command === 'apply-batch') applyBatch();
 else if (command === 'skip') skip();
 else help();
