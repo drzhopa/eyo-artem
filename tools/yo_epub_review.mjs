@@ -11,12 +11,6 @@ function die(message, code = 1) {
   process.exit(code);
 }
 
-function argValue(name, fallback = null) {
-  const i = args.indexOf(name);
-  if (i === -1) return fallback;
-  if (i + 1 >= args.length) die(`Нет значения после ${name}`);
-  return args[i + 1];
-}
 
 function writeJson(file, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, 'utf8');

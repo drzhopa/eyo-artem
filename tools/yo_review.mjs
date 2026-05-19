@@ -97,9 +97,6 @@ function onlyYoChanged(before, after) {
   return normalizeYo(before) === normalizeYo(after);
 }
 
-function compactSpaces(s) {
-  return s.replace(/\s+/gu, ' ').trim();
-}
 
 function buildQueue(text) {
   const notSafeEyo = makeEyo(notSafeDictionary);
