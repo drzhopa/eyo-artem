@@ -63,6 +63,15 @@
     "build": "npm run clean && npm run create:dicts && npm run build:bundles && tsc && tsc-alias",
     "build:bundles": "rollup -c rollup.config.mjs",
     "unit-test": "jest ./test",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "yo:txt:prepare": "node tools/yo_review.mjs prepare",
+    "yo:txt:next": "node tools/yo_review.mjs next",
+    "yo:txt:apply": "node tools/yo_review.mjs apply",
+    "yo:txt:status": "node tools/yo_review.mjs status",
+    "yo:epub:prepare": "node tools/yo_epub_review.mjs prepare",
+    "yo:epub:next": "node tools/yo_epub_review.mjs next",
+    "yo:epub:apply": "node tools/yo_epub_review.mjs apply",
+    "yo:epub:skip": "node tools/yo_epub_review.mjs skip",
+    "yo:epub:status": "node tools/yo_epub_review.mjs status"
   }
 }
