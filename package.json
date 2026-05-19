@@ -1,11 +1,10 @@
 {
-  "name": "eyo-kernel",
-  "description": "Restoring the letter «ё» (yo) in russian texts",
+  "name": "eyo-artem",
+  "description": "Personal fork of eyo-kernel with custom Russian ё dictionaries",
   "version": "4.1.2",
   "author": {
-    "name": "Denis Seleznev",
-    "email": "hcodes@yandex.ru",
-    "url": "https://github.com/e2yo/eyo-kernel"
+    "name": "drzhopa",
+    "url": "https://github.com/drzhopa"
   },
   "type": "module",
   "exports": {
@@ -15,11 +14,11 @@
     }
   },
   "typings": "./dist/index.d.ts",
-  "homepage": "https://github.com/e2yo/eyo-kernel",
+  "homepage": "https://github.com/drzhopa/eyo-artem",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/e2yo/eyo-kernel.git"
+    "url": "git+https://github.com/drzhopa/eyo-artem.git"
   },
   "keywords": [
     "e",
