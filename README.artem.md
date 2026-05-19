@@ -67,6 +67,8 @@ Rules:
 - Add a word to `safe.txt` only if it is safe without sentence context.
 - If the correct spelling depends on meaning or grammar, keep it for manual review.
 - Do not add book-specific guesses as global safe words.
+- Edit dictionaries only in clear cases: impossible suggestions, obvious dictionary errors, or genuinely missing context-free safe forms.
+- Do not remove rare, colloquial, archaic, dialectal, or stylistic forms just because they are noise in the current book.
 
 Examples:
 
