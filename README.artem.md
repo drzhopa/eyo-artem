@@ -27,10 +27,10 @@ Run `npm run build` again after editing dictionary files.
 ## Plain text workflow
 
 ```bash
-npm run yo:txt:prepare -- input.txt --workdir yo-work
-npm run yo:txt:next -- --workdir yo-work
-npm run yo:txt:apply -- ID "исправленное предложение" --workdir yo-work
-npm run yo:txt:status -- --workdir yo-work
+node tools/yo_review.mjs prepare input.txt --workdir yo-work
+node tools/yo_review.mjs next --workdir yo-work
+node tools/yo_review.mjs apply ID "исправленное предложение" --workdir yo-work
+node tools/yo_review.mjs status --workdir yo-work
 ```
 
 Output text is saved to:
@@ -44,11 +44,11 @@ yo-work/text.current.txt
 Use this only on an unpacked EPUB folder, not directly on `.epub`.
 
 ```bash
-npm run yo:epub:prepare -- /path/to/unpacked-epub
-npm run yo:epub:next -- /path/to/unpacked-epub
-npm run yo:epub:apply -- /path/to/unpacked-epub ID "исправленное предложение"
-npm run yo:epub:skip -- /path/to/unpacked-epub ID
-npm run yo:epub:status -- /path/to/unpacked-epub
+node tools/yo_epub_review.mjs prepare /path/to/unpacked-epub
+node tools/yo_epub_review.mjs next /path/to/unpacked-epub
+node tools/yo_epub_review.mjs apply /path/to/unpacked-epub ID "исправленное предложение"
+node tools/yo_epub_review.mjs skip /path/to/unpacked-epub ID
+node tools/yo_epub_review.mjs status /path/to/unpacked-epub
 ```
 
 The workflow has only two modes:
